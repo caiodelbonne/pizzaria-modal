@@ -131,15 +131,39 @@ c('.pizzaInfo--addButton').addEventListener('click',()=>{
     fecharModal();
 });
 
+
+    c('.menu-openner').addEventListener('click', () =>{
+        //mostrar o aside 
+        if(carrinho.length >0) {
+            c('aside').style.left= '0';
+        }
+    })
+
+    c('.menu-closer').addEventListener('click', ()=>{
+        c('aside').style.left ='100vw'
+    })
+
     // função que atualiza o carrinho > >  > 
 
 function upDateCarrinho () {
+
+    c('.menu-openner span').innerHTML = carrinho.length; 
+
+
     if(carrinho.length > 0 ) {
         c('aside').classList.add('show');
         c('.cart').innerHTML = ''
+
+        let subTotal = 0;
+        let desconto = 0;
+        let total = 0;
+
         for(let i in carrinho) {
             
             let pizzaItem = pizzaJson.find((item)=>item.id == carrinho[i].id);
+            subTotal += pizzaItem.price * carrinho[i].qt ;
+
+
             let carrinhoItem = c('.models .cart--item').cloneNode(true)
            
             let pizzaSizeName;
@@ -162,12 +186,43 @@ function upDateCarrinho () {
             carrinhoItem.querySelector('.cart--item-nome').innerHTML= pizzaName;
             carrinhoItem.querySelector('.cart--item--qt').innerHTML = carrinho[i].qt;
 
+
+            carrinhoItem.querySelector('.cart--item-qtmenos').addEventListener('click',()=>{
+                 if(carrinho[i].qt > 1){
+                     carrinho[i].qt --; 
+
+                 }else{ // remove e fecha o cart
+                     carrinho.splice(i,1)
+                 }
+
+                
+                upDateCarrinho();
+                
+            })
+
+            carrinhoItem.querySelector('.cart--item-qtmais').addEventListener('click',()=>{
+                carrinho[i].qt ++; 
+                upDateCarrinho();
+            })
+
+
             c('.cart').append(carrinhoItem)
 
 
         }
+
+        desconto = subTotal * 0.1;
+        total = subTotal - desconto
+
+        c('.subtotal span:last-child').innerHTML = `R$ ${subTotal.toFixed(2)}`;
+        c('.desconto span:last-child').innerHTML = `R$ ${desconto.toFixed(2)}`;
+        c('.total span:last-child').innerHTML = `R$ ${total.toFixed(2)}`;
+        
+
+
     }else {
         c('aside').classList.remove('show');
+        c('aside').style.left='100vw' // efeito de fechar no celular 
     }
 
 
